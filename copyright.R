@@ -1,29 +1,51 @@
-#get license
-library("vegan")
-
-package_license <- function(package, dataset, filename){
-  licensetype <- packageDescription(package, fields ="License")
-  licensetype[grep("*GPL*", licensetype)] <- "GPL"
-  if(licensetype == "GPL") {
-    if(dl <- readline(prompt="Download data? ")=="Y"){
-      env <- new.env()
-      set <- data(dataset, envir = env)[1]
-      x <- env[[set]]
-        write.table(x, file = filename)
-    } else {
-      print("not downloaded")
-    }
-  } else {
-    test <- print("Closed")
-  }
+#' Data framing
+#'
+#' Converts data built-in to a package into a dataframe.
+#' @param ... name of data from package. Note that package must already be loaded (see example)
+#' @keywords package data
+#' 
+#' @examples
+#' \dontrun{
+#' library(datasets)
+#' dataframe <- frameit("cars")
+#' }
+#' @export
+frameit <- function(...){
+  xy <- new.env()
+  make <- data(..., envir = xy)[1]
+  theframe <- xy[[make]]
+  return(theframe)
 }
 
-#examples
-package_license("vegan", varespec, "test.txt")
+#' Data download
+#'
+#' Checks to see if a packages license is open use. If it is, gives the option to download data. Enter "Y" to initiate download
+#' @param package Name of package where desired data come from
+#' @param dataframe Dataframe from 'frameit' 
+#' @param filename Name of the file to save data to
+#' @keywords license checking data download
+#' @importFrom utils data packageDescription write.table
+#' @examples
+#' \dontrun{
+#' library(datasets)
+#' dataframe <- frameit("cars")
+#' data_download("datasets", dataframe, "cars.txt")
+#' }
+#' @export
+data_download <- function(package, dataframe, filename){
+  licensetype <- packageDescription(package, fields ="License")
+  licensetype[grep("*GPL*", licensetype)] <- "free"
+  licensetype[grep("*CC0*", licensetype)] <- "free"
+  licensetype[grep("*BSD*", licensetype)] <- "free"
+  licensetype[grep("*MIT*", licensetype)] <- "free"
 
-
-env <- new.env()
-set <- data(varechem, envir = env)[1]
-x <- env[[set]]
-
-
+  if(licensetype == "free") {
+    if(dl <- readline(prompt="Download data? ")=="Y"){
+      write.table(dataframe, file = filename)
+    } else {
+      print("Not downloaded")
+    }
+  } else {
+    test <- print("License not of type GPL, CC0, BSD, or MIT")
+  }
+}

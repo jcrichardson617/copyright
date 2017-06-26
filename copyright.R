@@ -1,6 +1,6 @@
 #' Data framing
 #'
-#' Converts data built-in to a package into a dataframe.
+#' Converts built-in package data into a dataframe.
 #' @param ... name of data from package. Note that package must already be loaded (see example)
 #' @keywords package data
 #' 
@@ -17,9 +17,9 @@ frameit <- function(...){
   return(theframe)
 }
 
-#' Data download
+#' Data writer
 #'
-#' Checks to see if a packages license is open use. If it is, gives the option to download data. Enter "Y" to initiate download
+#' Checks to see if a packages license is open use. If it is, gives the option to write data to a file. Enter "Y" to initiate download
 #' @param package Name of package where desired data come from
 #' @param dataframe Dataframe from 'frameit' 
 #' @param filename Name of the file to save data to
@@ -29,23 +29,18 @@ frameit <- function(...){
 #' \dontrun{
 #' library(datasets)
 #' dataframe <- frameit("cars")
-#' data_download("datasets", dataframe, "cars.txt")
+#' data_writer("datasets", dataframe, "cars.txt")
 #' }
 #' @export
-data_download <- function(package, dataframe, filename){
+data_writer <- function(package, dataframe, filename){
   licensetype <- packageDescription(package, fields ="License")
-  licensetype[grep("*GPL*", licensetype)] <- "free"
-  licensetype[grep("*CC0*", licensetype)] <- "free"
-  licensetype[grep("*BSD*", licensetype)] <- "free"
-  licensetype[grep("*MIT*", licensetype)] <- "free"
-
-  if(licensetype == "free") {
-    if(dl <- readline(prompt="Download data? ")=="Y"){
+  if(grepl("*GNU|*Artistic|*GPL|*CC0|*BSD|*MIT|*Creative|*Part", licensetype) == TRUE) {
+    if(dl <- readline(prompt="Write data to file? ")=="Y"){
       write.table(dataframe, file = filename)
     } else {
       print("Not downloaded")
     }
   } else {
-    test <- print("License not of type GPL, CC0, BSD, or MIT")
+    print(cat("License is: ", licensetype))
   }
 }

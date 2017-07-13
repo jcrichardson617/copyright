@@ -1,4 +1,4 @@
-#' Frame It
+#' Name it
 #'
 #' Assigns built-in package data to a named variable.
 #' @param ... name of data from package. Note that package must already be loaded (see example)
@@ -7,10 +7,10 @@
 #' @examples
 #' \dontrun{
 #' library(datasets)
-#' dataframe <- frameit("cars")
+#' dataframe <- nameit("cars")
 #' }
 #' @export
-frameit <- function(...){
+nameit <- function(...){
   xy <- new.env()
   make <- data(..., envir = xy)[1]
   theframe <- xy[[make]]
@@ -28,35 +28,80 @@ frameit <- function(...){
 #' @examples
 #' \dontrun{
 #' library(datasets)
-#' dataframe <- frameit("cars")
-#' data_writer("datasets", dataframe, "cars.txt")
+#' cars_named <- nameit("cars")
+#' data_writer("datasets", cars_named, "cars.txt")
 #' }
 #' @export
 data_writer <- function(package, dataframe, filename){
   licensetype <- packageDescription(package, fields ="License")
   if(grepl("*GNU|*Artistic|*GPL|*CC0|*BSD|*MIT|*Creative|*Part", licensetype) == TRUE) {
-    if(dl <- readline(prompt="Write data to file? ")=="Y"){
+    if(dl <- readline(prompt="Write data to file? ")=="yes"){
       write.table(dataframe, file = filename)
     } else {
-      print("Not downloaded")
+      print("Not saved")
     }
   } else {
     print(cat("License is: ", licensetype))
   }
 }
 
-#' Read csv extended
+#' Read online csv extended
 #'
 #' Description
 #' @param url address url address of desired dataset
 #' @keywords read csv public data
 #' @examples
 #' \dontrun{
-#' read.csv_cr("http://www.stats.ox.ac.uk/pub/datasets/csb/ch11b.dat")
+#' read.URL("http://www.stats.ox.ac.uk/pub/datasets/csb/ch11b.dat")
 #' }
 #' @export
-read.csv_cr <- function(urladdress){
+read.URL <- function(urladdress){
   df <-  read.csv(url(urladdress))
+  return(list(df,print("Make sure these data are public before using them.")))
+}
+
+#' Read online csv2 extended
+#'
+#' Description
+#' @param url address url address of desired dataset
+#' @keywords read csv2 public data
+#' @examples
+#' \dontrun{
+#' read.csv2_cr("http://www.stats.ox.ac.uk/pub/datasets/csb/ch11b.dat")
+#' }
+#' @export
+read.csv2_cr <- function(urladdress){
+  df <-  read.csv2(url(urladdress))
+  return(list(df,print("Make sure these data are public before using them.")))
+}
+
+#' Read online delim extended
+#'
+#' Description
+#' @param url address url address of desired dataset
+#' @keywords read delim public data
+#' @examples
+#' \dontrun{
+#' read.delim_cr("http://www.stats.ox.ac.uk/pub/datasets/csb/ch11b.dat")
+#' }
+#' @export
+read.delim_cr <- function(urladdress){
+  df <-  read.delim(url(urladdress))
+  return(list(df,print("Make sure these data are public before using them.")))
+}
+
+#' Read online delim2 extended
+#'
+#' Description
+#' @param url address url address of desired dataset
+#' @keywords read delim2 public data
+#' @examples
+#' \dontrun{
+#' read.delim2_cr("http://www.stats.ox.ac.uk/pub/datasets/csb/ch11b.dat")
+#' }
+#' @export
+read.delim_cr <- function(urladdress){
+  df <-  read.delim2(url(urladdress))
   return(list(df,print("Make sure these data are public before using them.")))
 }
 
